@@ -29,4 +29,16 @@ class ActivityEvent extends ActivityAppModel {
 			'order' => ''
 		)
 	);
+
+	public function eventExists($name, $channelID, $model, $foreign_key) {
+		$result = $this->find('first', array(
+			'conditions' => array(
+				'ActivityEvent.name' => $name,
+				'ActivityEvent.activity_channel_id' => $channelID,
+				'ActivityEvent.model' => $model,
+				'ActivityEvent.foreign_key' => $foreign_key,
+			)
+		));
+		return !empty($result);
+	}
 }
