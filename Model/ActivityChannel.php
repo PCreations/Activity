@@ -7,6 +7,9 @@ App::uses('ActivityAppModel', 'Activity.Model');
  * @property User $User
  */
 class ActivityChannel extends ActivityAppModel {
+
+	public $actsAs = array('Containable');
+
 /**
  * Display field
  *
@@ -47,6 +50,7 @@ class ActivityChannel extends ActivityAppModel {
 		'User' => array(
 			'className' => 'User',
 			'joinTable' => 'activity_channels_users',
+			'with' => 'ActivityChannelsUser',
 			'foreignKey' => 'activity_channel_id',
 			'associationForeignKey' => 'user_id',
 			'unique' => 'keepExisting',
@@ -61,4 +65,13 @@ class ActivityChannel extends ActivityAppModel {
 		)
 	);
 
+
+	public function channelExists($channelName) {
+		$result = $this->find('first', array(
+			'conditions' => array(
+				'ActivityChannel.name' => $channelName,
+			)
+		));
+		return !empty($result);
+	}
 }
