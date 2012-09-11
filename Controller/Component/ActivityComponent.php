@@ -48,9 +48,10 @@ class ActivityComponent extends Component {
 				'id' => String::uuid(),
 				'user_id' => $this->Auth->user('id'),
 				'message' => $message,
-				'activities_event_id' => $event['ActivityEvent']['id'],
+				'activity_event_id' => $event['ActivityEvent']['id'],
 			)
 		))) {
+			$this->controller->getEventManager()->dispatch(new CakeEvent('Plugin.Activity.trigger', $Activity->read()));
 			$this->Pusher->trigger($this->_privatePrefix . $this->_getChannelName(), $this->_getEventName($eventName), array('message' => $message));	
 		}
 		else {

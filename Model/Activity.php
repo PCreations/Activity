@@ -25,9 +25,9 @@ class Activity extends ActivityAppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'ActivitiesEvent' => array(
-			'className' => 'ActivitiesEvent',
-			'foreignKey' => 'activities_event_id',
+		'ActivityEvent' => array(
+			'className' => 'ActivityEvent',
+			'foreignKey' => 'activity_event_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

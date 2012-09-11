@@ -10,10 +10,11 @@ class ActivitySchema extends CakeSchema {
 
 	public $activities = array(
 		'id' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 36, 'key' => 'primary', 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-		'user_id' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 36, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-		'activities_event_id' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 36, 'key' => 'index', 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+		'user_id' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 36, 'collate' => 'latin1_swedish_ci', 'comment' => 'The user who triggered the activity', 'charset' => 'latin1'),
+		'message' => array('type' => 'string', 'null' => false, 'default' => NULL, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+		'activity_event_id' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 36, 'key' => 'index', 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => NULL),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'activities_event_id' => array('column' => 'activities_event_id', 'unique' => 0)),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'activities_event_id' => array('column' => 'activity_event_id', 'unique' => 0)),
 		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
 	);
 	public $activity_channels = array(
