@@ -37,7 +37,23 @@ class ActivityComponent extends Component {
 		}
 		list($channel, $event) = $this->_channelRoutines($eventName);
 		$this->_subscribeUser($channel);
-		$this->Pusher->trigger($this->_getChannelName(), $this->_getEventName($eventName), array('message' => $message));
+		
+		/* Saving activity */
+		$Activity = ClassRegistry::init('Activity.Activity');
+		$Activity->create();
+		if($Activity->save(array(
+			'Activity' => array(
+				'id' => String::uuid(),
+				'user_id' => $this->Auth->user('id'),
+				'message' => $message,
+				'activities_event_id' => $event['ActivityEvent']['id'],
+			)
+		))) {
+			$this->Pusher->trigger($this->_getChannelName(), $this->_getEventName($eventName), array('message' => $message));	
+		}
+		else {
+			throw new ActivityException('Unable to save Activity');
+		}
 	}
 
 	protected function _channelRoutines($eventName) {
