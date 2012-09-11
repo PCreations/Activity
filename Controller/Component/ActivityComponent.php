@@ -9,9 +9,11 @@ class ActivityComponent extends Component {
 
 	public $components = array('Auth', 'Pusher.Pusher');
 
-	protected $_channelTemplate = 'private-activity-:model-:id';
+	protected $_channelTemplate = 'activity-:model-:id';
 
 	protected $_eventTemplate = ':model-:id-:name';
+
+	protected $_privatePrefix = 'private-';
 
 	public function __construct(ComponentCollection $collection, $settings = array()) {
 		$this->_setupComponents();
@@ -49,7 +51,7 @@ class ActivityComponent extends Component {
 				'activities_event_id' => $event['ActivityEvent']['id'],
 			)
 		))) {
-			$this->Pusher->trigger($this->_getChannelName(), $this->_getEventName($eventName), array('message' => $message));	
+			$this->Pusher->trigger($this->_privatePrefix . $this->_getChannelName(), $this->_getEventName($eventName), array('message' => $message));	
 		}
 		else {
 			throw new ActivityException('Unable to save Activity');
