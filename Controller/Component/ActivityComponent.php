@@ -67,6 +67,7 @@ class ActivityComponent extends Component {
 			if($this->controller->ActivityChannel->save(array(
 				'ActivityChannel' => array(
 					'id' => String::uuid(),
+					'user_id' => $this->Auth->user('id'),
 					'name' => $this->_getChannelName()
 				)
 			))){
@@ -123,16 +124,9 @@ class ActivityComponent extends Component {
 			)
 		));
 		if(!$user) {
-			$this->controller->ActivityChannelsUser->create();
-			if(!$this->controller->ActivityChannelsUser->save(array(
-				'ActivityChannelsUser' => array(
-					'activity_channel_id' => $channel['ActivityChannel']['id'],
-					'user_id' => $this->Auth->user('id')
-				)
-			))) {
-				throw new ActivityException('Unable to subscribe user to ' . $channel['ActivityChannel']['name']);
-			}
+			$this->controller->ActivityChannelsUser->subscribeUser($channel, $this->Auth->user('id'));
 		}
+		
 	}
 
 	private function _getChannelName() {

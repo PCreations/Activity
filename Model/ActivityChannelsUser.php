@@ -33,4 +33,16 @@ class ActivityChannelsUser extends ActivityAppModel {
 			'order' => ''
 		)
 	);
+
+	public function subscribeUser($channel, $userID) {
+		$this->create();
+		if(!$this->save(array(
+			'ActivityChannelsUser' => array(
+				'activity_channel_id' => $channel['ActivityChannel']['id'],
+				'user_id' => $userID
+			)
+		))) {
+			throw new ActivityException('Unable to subscribe user to ' . $channel['ActivityChannel']['name']);
+		}
+	}
 }

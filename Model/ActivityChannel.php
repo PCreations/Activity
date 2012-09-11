@@ -47,7 +47,7 @@ class ActivityChannel extends ActivityAppModel {
  * @var array
  */
 	public $hasAndBelongsToMany = array(
-		'User' => array(
+		'Subscribers' => array(
 			'className' => 'User',
 			'joinTable' => 'activity_channels_users',
 			'with' => 'ActivityChannelsUser',
@@ -65,7 +65,16 @@ class ActivityChannel extends ActivityAppModel {
 		)
 	);
 
-
+	public $belongsTo = array(
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		)
+	);
+	
 	public function channelExists($channelName) {
 		$result = $this->find('first', array(
 			'conditions' => array(
