@@ -6,6 +6,9 @@ App::uses('ActivityAppModel', 'Activity.Model');
  * @property ActivityChannel $ActivityChannel
  */
 class ActivityEvent extends ActivityAppModel {
+
+	public $actsAs = array('Containable');
+	
 /**
  * Display field
  *
