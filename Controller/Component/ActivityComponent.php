@@ -7,38 +7,37 @@ class ActivityComponent extends Component {
 	
 	public $controller;
 
-	public $components = array();
+	public $components = array('Auth', 'Pusher.Pusher');
 
 	protected $_channelTemplate = 'private-activity-:model-:id';
 
 	protected $_eventTemplate = ':model-:id-:name';
 
 	public function __construct(ComponentCollection $collection, $settings = array()) {
-		parent::__construct($collection, $settings);
 		$this->_setupComponents();
+		parent::__construct($collection, $settings);
 	}
 
 	protected function _setupComponents() {
 		App::uses('PusherComponent', 'Pusher.Controller/Component');
-		if (class_exists('PusherComponent')) {
-			$this->components[] = 'Pusher.Pusher';
-		}
-		else {
+		if (!class_exists('PusherComponent'))
 			throw new MissingPluginException('Missing Pusher plugin');
-		}
 	}
 
 	public function initialize(Controller $controller) {
 		$this->controller = $controller;
 		$this->controller->loadModel('Activity.ActivityChannel');
 		$this->controller->loadModel('Activity.ActivityEvent');
+		$this->controller->loadModel('Activity.ActivityChannelsUser');
 	}
 
-	public function trigger($eventName) {
+	public function trigger($eventName, $message) {
 		if(!$this->controller->{$this->controller->modelClass}->exists()) {
 			throw new ActivityException($this->controller->modelClass . '::id is null');
 		}
-		$this->_channelRoutines($eventName);
+		list($channel, $event) = $this->_channelRoutines($eventName);
+		$this->_subscribeUser($channel);
+		$this->Pusher->trigger($this->_getChannelName(), $this->_getEventName($eventName), array('message' => $message));
 	}
 
 	protected function _channelRoutines($eventName) {
@@ -63,9 +62,7 @@ class ActivityComponent extends Component {
 			$channel = $this->controller->ActivityChannel->findByName($this->_getChannelName());
 			$this->_addEvent($eventName, $channel['ActivityChannel']['id']);
 		}
-
-		debug($channel);
-		debug($this->controller->ActivityEvent->read());
+		return array($channel, $this->controller->ActivityEvent->read());
 	}
 
 	protected function _addEvent($eventName, $channelID) {
@@ -96,6 +93,26 @@ class ActivityComponent extends Component {
 				)
 			));
 			$this->controller->ActivityEvent->id = $event['ActivityEvent']['id'];
+		}
+	}
+
+	protected function _subscribeUser($channel) {
+		$user = $this->controller->ActivityChannelsUser->find('first', array(
+			'conditions' => array(
+				'ActivityChannelsUser.user_id' => $this->Auth->user('id'),
+				'ActivityChannelsUser.activity_channel_id' => $channel['ActivityChannel']['id']
+			)
+		));
+		if(!$user) {
+			$this->controller->ActivityChannelsUser->create();
+			if(!$this->controller->ActivityChannelsUser->save(array(
+				'ActivityChannelsUser' => array(
+					'activity_channel_id' => $channel['ActivityChannel']['id'],
+					'user_id' => $this->Auth->user('id')
+				)
+			))) {
+				throw new ActivityException('Unable to subscribe user to ' . $channel['ActivityChannel']['name']);
+			}
 		}
 	}
 
